@@ -31,10 +31,10 @@ namespace CIRAFI
 		int _col;
 	};
 
-	class CiratefiData
+	class CIRAFIData
 	{
 	public:
-		CiratefiData() :_scaleNum(5), _initialScale(0.5), _finalScale(1.0), _angleNum(36), _scaleThreshold(0.8), _angleThreshold(0.5), _nccThreshold(0.9)
+		CIRAFIData() :_scaleNum(5), _initialScale(0.5), _finalScale(1.0), _angleNum(36), _scaleThreshold(0.8), _angleThreshold(0.5), _nccThreshold(0.9)
 			, _isMatchNegative(false), _circleNum(16), _initialRadius(0), _finalRadius(-1), _tefiTolerance(1) {}
 		void CountParameter(cv::Mat& templateImage);
 		double scale(double s) { return _initialScale*pow(_passoesc, s); }
@@ -58,14 +58,12 @@ namespace CIRAFI
 		void Cissq(cv::Mat& templateImage);
 		void Cifi(cv::Mat& sourceImage);
 		void CifiAnalysis(cv::Mat& sourceImage);
-		cv::Mat DrawCifiResult(cv::Mat& sourceImage);
 
 		double RadialSample(cv::Mat& image, int centerY, int centerX, double angle, double radius);
 		void Rassq(cv::Mat& templateImage);
 		void Rafi(cv::Mat& sourceImage);
-		cv::Mat DrawRafiResult(cv::Mat& sourceImage);
 
-		void CiratefiData::Tefi(cv::Mat& sourceImage, cv::Mat& templateImage);
+		void CIRAFIData::Tefi(cv::Mat& sourceImage, cv::Mat& templateImage);
 		cv::Mat DrawTefiResult(cv::Mat& sourceImage, double sampleRatio = 1);
 
 		std::vector<CorrData> _cis;

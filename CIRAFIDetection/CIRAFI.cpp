@@ -15,7 +15,7 @@ int sub2ind(int numRows, int rowSub, int colSub)
 
 namespace CIRAFI
 {
-	void CiratefiData::CountParameter(Mat& templateImage)
+	void CIRAFIData::CountParameter(Mat& templateImage)
 	{
 		if (_scaleNum>1) _passoesc = exp(log(_finalScale / _initialScale) / _scaleNum); else _passoesc = 1.0;
 		_angleDegree = 360.0 / _angleNum;
@@ -25,7 +25,7 @@ namespace CIRAFI
 		if (_circleNum>1) _circleDistance = (_finalRadius - _initialRadius) / (_circleNum - 1); else _circleDistance = 0.0;
 	}
 
-	double CiratefiData::CircularSample(Mat& image, int y, int x, int radius)
+	double CIRAFIData::CircularSample(Mat& image, int y, int x, int radius)
 	{
 		int y2 = 0; int x2 = radius; int sum = 0; int count = 0;
 		int r2 = radius*radius;
@@ -53,7 +53,7 @@ namespace CIRAFI
 		return *(image.data + y*image.step[0] + x*image.step[1]);
 	}
 
-	void CiratefiData::Cisssa(Mat& sourceImage)
+	void CIRAFIData::Cisssa(Mat& sourceImage)
 	{
 		_ca.resize(_circleNum*sourceImage.rows*sourceImage.cols, -1.0);
 		int n = sourceImage.rows*sourceImage.cols;
@@ -79,7 +79,7 @@ namespace CIRAFI
 		}
 	}
 
-	Mat CiratefiData::quadradaimpar(Mat& image)
+	Mat CIRAFIData::quadradaimpar(Mat& image)
 	{
 		int length = min(image.rows, image.cols);
 		if (length % 2 == 0) length--;
@@ -88,7 +88,7 @@ namespace CIRAFI
 		return roi;
 	}
 
-	void CiratefiData::Cissq(Mat& templateImage)
+	void CIRAFIData::Cissq(Mat& templateImage)
 	{
 		_cq.clear();
 		_cq.resize(_scaleNum*_circleNum, -1.0);
@@ -110,7 +110,7 @@ namespace CIRAFI
 		}
 	}
 
-	void CiratefiData::Cifi(Mat& sourceImage)
+	void CIRAFIData::Cifi(Mat& sourceImage)
 	{
 		vector<vector<double> > cqi(_scaleNum);
 		vector<double> cqi2(_scaleNum, 0);
@@ -196,30 +196,13 @@ namespace CIRAFI
 		}
 	}
 
-	void CiratefiData::CifiAnalysis(Mat& sourceImage)
+	void CIRAFIData::CifiAnalysis(Mat& sourceImage)
 	{
 		Cisssa(sourceImage);
 		Cifi(sourceImage);
 	}
 
-	Mat CiratefiData::DrawCifiResult(Mat& sourceImage)
-	{
-		Mat cifiResult;
-		cvtColor(sourceImage, cifiResult, CV_GRAY2BGR);
-		for (int i = 0; i<_cis.size(); i++)
-		{
-			int row = _cis[i].GetRow();
-			int col = _cis[i].GetCol();
-			if (row >= cifiResult.rows && row<0 && col >= cifiResult.cols && col<0)
-			{
-				return Mat();
-			}
-			cifiResult.at<Vec3b>(row, col) = Vec3b((uchar)(_cis[i].GetCoefficient()*255.0), _cis[i].GetScale(), 255);
-		}
-		return cifiResult;
-	}
-
-	double CiratefiData::RadialSample(Mat& image, int centerY, int centerX, double angle, double radius)
+	double CIRAFIData::RadialSample(Mat& image, int centerY, int centerX, double angle, double radius)
 	{
 		int sum = 0; int count = 0;
 		int x, y, dx, dy, a, err, dx2, dy2, sobe;
@@ -259,7 +242,7 @@ namespace CIRAFI
 		return *(image.data + centerY*image.step[0] + centerX*image.step[1]);
 	}
 
-	void CiratefiData::Rassq(Mat& templateImage)
+	void CIRAFIData::Rassq(Mat& templateImage)
 	{
 		_rq.resize(_angleNum);
 		for (int a = 0; a<_angleNum; a++)
@@ -268,7 +251,7 @@ namespace CIRAFI
 		}
 	}
 
-	void CiratefiData::Rafi(Mat& sourceImage)
+	void CIRAFIData::Rafi(Mat& sourceImage)
 	{
 		vector<double> X(_angleNum);
 		for (int i = 0; i<_angleNum; i++) X[i] = _rq[i];
@@ -336,24 +319,7 @@ namespace CIRAFI
 		}
 	}
 
-	Mat CiratefiData::DrawRafiResult(Mat& sourceImage)
-	{
-		Mat rafiResult;
-		cvtColor(sourceImage, rafiResult, CV_GRAY2BGR);
-		for (int i = 0; i<_ras.size(); i++)
-		{
-			int row = _ras[i].GetRow();
-			int col = _ras[i].GetCol();
-			if (row >= rafiResult.rows && row<0 && col >= rafiResult.cols && col<0)
-			{
-				return Mat();
-			}
-			rafiResult.at<Vec3b>(row, col) = Vec3b((uchar)(_ras[i].GetCoefficient()*255.0), _ras[i].GetAngle(), 255);
-		}
-		return rafiResult;
-	}
-
-	void CiratefiData::Tefi(Mat& sourceImage, Mat& templateImage)
+	void CIRAFIData::Tefi(Mat& sourceImage, Mat& templateImage)
 	{
 		vector< vector<bool> > possibleCheck(_scaleNum*_angleNum);
 		vector< vector<double> > possibleTemplateX(_scaleNum*_angleNum);
@@ -475,7 +441,7 @@ namespace CIRAFI
 		}
 	}
 
-	Mat CiratefiData::DrawTefiResult(Mat& sourceImage, double sampleRatio)
+	Mat CIRAFIData::DrawTefiResult(Mat& sourceImage, double sampleRatio)
 	{
 		Mat tefiResult;
 		cvtColor(sourceImage, tefiResult, CV_GRAY2BGR);

@@ -72,7 +72,7 @@ int main()
 		inRange(tImg, Scalar(0, 0, 100), Scalar(255, 100, 255), tImg);
 	}
 	imshow("Template Image", tImg);
-	CiratefiData tempA;
+	CIRAFIData tempA;
 	tempA.CountParameter(tImg);
 	tempA.Cissq(tImg);
 	tempA.Rassq(tImg);
