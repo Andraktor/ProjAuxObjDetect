@@ -79,15 +79,6 @@ namespace CIRAFI
 		}
 	}
 
-	Mat CIRAFIData::quadradaimpar(Mat& image)
-	{
-		int length = min(image.rows, image.cols);
-		if (length % 2 == 0) length--;
-		Mat tempRoi = image(Rect((image.cols - 1) / 2 - length / 2, (image.rows - 1) / 2 - length / 2, length, length));
-		Mat roi(tempRoi.clone());
-		return roi;
-	}
-
 	void CIRAFIData::Cissq(Mat& templateImage)
 	{
 		_cq.clear();
