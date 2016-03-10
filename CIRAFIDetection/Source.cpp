@@ -73,9 +73,10 @@ int main()
 	}
 	imshow("Template Image", tImg);
 	CIRAFIData tempA;
-	tempA.CountParameter(tImg);
-	tempA.Cissq(tImg);
-	tempA.Rassq(tImg);
+	//tempA.CountParameter(tImg);
+	tempA.TemplateSample(tImg);
+	/*tempA.Cissq(tImg);
+	tempA.Rassq(tImg);*/
 
 	while (1)
 	{

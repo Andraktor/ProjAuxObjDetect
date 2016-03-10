@@ -458,4 +458,11 @@ namespace CIRAFI
 		}
 		return tefiResult;
 	}
+
+	void CIRAFIData::TemplateSample(cv::Mat& templateImage)
+	{
+		CountParameter(templateImage);
+		Cissq(templateImage);
+		Rassq(templateImage);
+	}
 }

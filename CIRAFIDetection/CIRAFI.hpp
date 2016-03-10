@@ -65,6 +65,8 @@ namespace CIRAFI
 		void CIRAFIData::Tefi(cv::Mat& sourceImage, cv::Mat& templateImage);
 		cv::Mat DrawTefiResult(cv::Mat& sourceImage, double sampleRatio = 1);
 
+		void TemplateSample(cv::Mat& templateImage);
+
 		std::vector<CorrData> _cis;
 		std::vector<CorrData> _ras;
 		std::vector<CorrData> _tes;
