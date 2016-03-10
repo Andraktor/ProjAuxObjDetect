@@ -1,0 +1,303 @@
+struct CIRAFIData
+{
+	string id;
+	vector<Mat> templates;
+	double CIFIdata[25][13];
+	double RAFIdata[25][36][36];
+};
+struct CIRAFIBase
+{
+	int nScales;
+	int nRadials;
+	int nCircles;
+	vector<int> circles[2][13];
+	vector<int> radials[2][36];
+};
+
+int sub2ind(int, int, int);
+
+namespace CIRAFI {
+	CIRAFIBase Setup(void);
+	CIRAFIData Scales(Mat*, CIRAFIBase*);
+	CIRAFIData AssignID(CIRAFIData, string);
+	CIRAFIData CIRAFI(Mat*, CIRAFIBase*);
+}
+
+namespace CIRAFI {
+	CIRAFIBase Setup(void)
+	{
+		CIRAFIBase base;
+		base.nScales = 25;
+		base.nCircles = 13;
+		base.nRadials = 36;
+
+		// NEEDS REDOING - NUMBERS ARE ONE-BASED!!!
+		base.circles[0][0] = { -3, -2, -2, -2, -2, -1, -1, 0, 0, 1, 1, 2, 2, 2, 2, 3 };
+		base.circles[1][0] = { 0, -2, -1, 1, 2, -2, 2, -3, 3, -2, 2, -2, -1, 1, 2, 0 };
+		base.circles[0][1] = { -6,-5,-5,-5,-5,-5,-5,-4,-4,-3,-3,-2,-2,-1,-1,0,0,1,1,2,2,3,3,4,4,5,5,5,5,5,5,6 };
+		base.circles[1][1] = { 0,-3,-2,-1,1,2,3,-4,4,-5,5,-5,5,-5,5,-6,6,-5,5,-5,5,-5,5,-4,4,-3,-2,-1,1,2,3,0 };
+		base.circles[0][2] = { -9,-8,-8,-8,-8,-8,-8,-8,-8,-7,-7,-7,-7,-6,-6,-5,-5,-4,-4,-4,-4,-3,-3,-2,-2,-1,-1,0,0,1,1,2,2,3,3,4,4,4,4,5,5,6,6,7,7,7,7,8,8,8,8,8,8,8,8,9 };
+		base.circles[1][2] = { 0,-4,-3,-2,-1,1,2,3,4,-5,-4,4,5,-6,6,-7,7,-8,-7,7,8,-8,8,-8,8,-8,8,-9,9,-8,8,-8,8,-8,8,-8,-7,7,8,-7,7,-6,6,-5,-4,4,5,-4,-3,-2,-1,1,2,3,4,0 };
+		base.circles[0][3] = { -12,-11,-11,-11,-11,-11,-11,-11,-11,-10,-10,-10,-10,-9,-9,-8,-8,-7,-7,-6,-6,-5,-5,-4,-4,-3,-3,-2,-2,-1,-1,0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,10,10,11,11,11,11,11,11,11,11,12 };
+		base.circles[1][3] = { 0,-4,-3,-2,-1,1,2,3,4,-6,-5,5,6,-7,7,-8,8,-9,9,-10,10,-10,10,-11,11,-11,11,-11,11,-11,11,-12,12,-11,11,-11,11,-11,11,-11,11,-10,10,-10,10,-9,9,-8,8,-7,7,-6,-5,5,6,-4,-3,-2,-1,1,2,3,4,0 };
+		base.circles[0][4] = { -15,-14,-14,-14,-14,-14,-14,-14,-14,-14,-14,-13,-13,-13,-13,-12,-12,-12,-12,-11,-11,-11,-11,-10,-10,-10,-10,-9,-9,-9,-9,-8,-8,-7,-7,-6,-6,-5,-5,-4,-4,-3,-3,-2,-2,-1,-1,0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,9,9,10,10,10,10,11,11,11,11,12,12,12,12,13,13,13,13,14,14,14,14,14,14,14,14,14,14,15 };
+		base.circles[1][4] = { 0,-5,-4,-3,-2,-1,1,2,3,4,5,-7,-6,6,7,-9,-8,8,9,-10,-9,9,10,-11,-10,10,11,-12,-11,11,12,-12,12,-13,13,-13,13,-14,14,-14,14,-14,14,-14,14,-14,14,-15,15,-14,14,-14,14,-14,14,-14,14,-14,14,-13,13,-13,13,-12,12,-12,-11,11,12,-11,-10,10,11,-10,-9,9,10,-9,-8,8,9,-7,-6,6,7,-5,-4,-3,-2,-1,1,2,3,4,5,0 };
+		base.circles[0][5] = { -18,-17,-17,-17,-17,-17,-17,-17,-17,-17,-17,-16,-16,-16,-16,-16,-16,-15,-15,-14,-14,-14,-14,-13,-13,-13,-13,-12,-12,-11,-11,-11,-11,-10,-10,-9,-9,-8,-8,-7,-7,-6,-6,-5,-5,-4,-4,-3,-3,-2,-2,-1,-1,0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,11,11,12,12,13,13,13,13,14,14,14,14,15,15,16,16,16,16,16,16,17,17,17,17,17,17,17,17,17,17,18 };
+		base.circles[1][5] = { 0,-5,-4,-3,-2,-1,1,2,3,4,5,-8,-7,-6,6,7,8,-9,9,-11,-10,10,11,-12,-11,11,12,-13,13,-14,-13,13,14,-14,14,-15,15,-16,16,-16,16,-16,16,-17,17,-17,17,-17,17,-17,17,-17,17,-18,18,-17,17,-17,17,-17,17,-17,17,-17,17,-16,16,-16,16,-16,16,-15,15,-14,14,-14,-13,13,14,-13,13,-12,-11,11,12,-11,-10,10,11,-9,9,-8,-7,-6,6,7,8,-5,-4,-3,-2,-1,1,2,3,4,5,0 };
+		base.circles[0][6] = { -21,-20,-20,-20,-20,-20,-20,-20,-20,-20,-20,-20,-20,-19,-19,-19,-19,-18,-18,-18,-18,-17,-17,-17,-17,-16,-16,-15,-15,-14,-14,-13,-13,-12,-12,-11,-11,-10,-10,-9,-9,-8,-8,-7,-7,-6,-6,-5,-5,-4,-4,-3,-3,-2,-2,-1,-1,0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13,14,14,15,15,16,16,17,17,17,17,18,18,18,18,19,19,19,19,20,20,20,20,20,20,20,20,20,20,20,20,21 };
+		base.circles[1][6] = { 0,-6,-5,-4,-3,-2,-1,1,2,3,4,5,6,-8,-7,7,8,-10,-9,9,10,-12,-11,11,12,-13,13,-14,14,-15,15,-16,16,-17,17,-17,17,-18,18,-18,18,-19,19,-19,19,-20,20,-20,20,-20,20,-20,20,-20,20,-20,20,-21,21,-20,20,-20,20,-20,20,-20,20,-20,20,-20,20,-19,19,-19,19,-18,18,-18,18,-17,17,-17,17,-16,16,-15,15,-14,14,-13,13,-12,-11,11,12,-10,-9,9,10,-8,-7,7,8,-6,-5,-4,-3,-2,-1,1,2,3,4,5,6,0 };
+
+		base.radials[0][0] = {};
+
+		return base;
+	}
+
+	CIRAFIData AssignID(CIRAFIData data, string id)
+	{
+		data.id = id;
+		return data;
+	}
+
+
+
+/*CIRAFIBase TemplatePrep(Mat img, int nScales, int nRadials)
+{
+	vector<float> scales;
+	vector<float> radials;
+	vector<Mat> templates;
+
+	for (int index = 0; index < nScales; index++)
+	{
+		scales[index] = 0.5 + (0.1 * (index + 1));
+		resize(img, templates[index], Size(), scales[index], scales[index]);
+	}
+
+	// CIFI Setup
+	int rr[80][80];
+	int cc[80][80];
+	int rrcc = 1;
+
+	int nCircles = 13;
+	int rStep = 3;
+	int maxDim = (nCircles * rStep * 2) + 2;
+	int centreDim = round(maxDim / 2);
+
+	bool outerCircle;
+	bool innerCircle;
+	vector<vector<int>> circles[2];
+
+	for (int i = 0; i < 80; i++)
+	{
+		for (int j = 0; j < 80; j++)
+		{
+			rr[i][j] = rrcc;
+			cc[j][i] = rrcc;
+			rrcc++;
+			if (rrcc > 80) rrcc = 1;
+		}
+	}
+
+	for (int rTemp = 1; rTemp < nCircles; rTemp++)
+	{
+		int rad = rTemp * rStep;
+
+		for (int i = 0; i < 80; i++)
+		{
+			for (int j = 0; j < 80; j++)
+			{
+				outerCircle = sqrt((rr[i][j] - centreDim) ^ 2 + (cc[i][j] - centreDim) ^ 2) <= rad;
+				innerCircle = sqrt((rr[i][j] - centreDim) ^ 2 + (cc[i][j] - centreDim) ^ 2) <= rad - 1;
+				if (innerCircle = 1) outerCircle = 0;
+				if (outerCircle = true)
+				{
+					circles[1][rTemp - 1].push_back(j - centreDim);
+					circles[0][rTemp - 1].push_back(i - centreDim);
+
+				}
+			}
+		}
+	}
+
+	// RAFI Setup
+	int maxRad = nCircles * rStep;
+	int nRadials = 36;
+
+	int angleLimit = round(nRadials / 2);
+	float radX;
+	float radY;
+	float deltaX;
+	float deltaY;
+	vector<int> valX;
+	vector<int> valY;
+
+	for (int nAngle = 1; nAngle < angleLimit; nAngle++)
+	{
+		float radAngle = PI * ((nAngle * 10) / 180);
+		radX = maxRad * cos(radAngle);
+		radY = maxRad * sin(radAngle);
+
+		radX = radX + centreDim;
+		radY = radY + centreDim;
+		centreDim = round(centreDim);
+		radX = round(radX);
+		radY = round(radY);
+
+		deltaX = radX - centreDim;
+		deltaY = radY - centreDim;
+
+		if (radX = centreDim)
+		{
+			if (centreDim < radY)
+			{
+				// valY = centreDim:radY;
+			} else if (centreDim > radY)
+			{
+				// valY = radY:centreDim;
+			}
+
+			// valX = centreDim * ones(size(valY))
+		}
+		else if (radY = centreDim)
+		{
+			if (centreDim < radX)
+			{
+				// valX = centreDim:radX;
+			}
+			else if (centreDim > radX)
+			{
+				// valX = radX:centreDim;
+			}
+		}
+		else
+		{
+			if (abs(deltaX) >= abs(deltaY))
+			{
+				if (centreDim < radX)
+				{
+					// valX = centreDim:radX;
+				}
+				else if (centreDim > radX)
+				{
+					// valX = radX:centreDim;
+				}
+				else
+				{
+					valX.push_back(centreDim);
+				}
+
+				float radGrad = deltaY / deltaX;
+				// valY = (radGrad.*(valX - centreDim)) + centreDim;
+			}
+		}
+	}
+}*/	
+
+CIRAFIData Scales(Mat* img, CIRAFIBase* base)
+	{
+		CIRAFIData data;
+		int nScales = base->nScales;
+		data.templates.resize(nScales);
+
+		for (int index = 0; index < nScales; index++)
+		{
+			float scales = 0.5 + (0.1 * (index + 1));
+			resize(*img, data.templates[index], Size(), scales, scales);
+		}
+
+		return data;
+	}
+
+	CIRAFIData CIRAFI(Mat* img, CIRAFIBase* base)
+	{
+		CIRAFIData data;
+		data = Scales(img, base);
+		int nScales = base->nScales;
+		int nCircles = base->nCircles;
+		int nRadials = base->nRadials;
+
+		SimpleBlobDetector hBlob;
+		vector<vector<float>> RAFIDataStatic;
+		int circSizes[13] = { 16, 32, 56, 64, 96, 108, 116, 140, 168, 192, 200, 200, 264 };
+		int radSizes[36] = { 39, 38, 35, 31, 31, 35, 38, 39, 40, 39, 38, 35, 31, 31, 35, 38, 39, 40, 39, 38, 35, 31, 31, 35, 38, 39, 40, 39, 38, 35, 31, 31, 35, 38, 39, 40 };
+
+		for (int nTemp = 0; nTemp < nScales; nTemp++)
+		{
+			vector<KeyPoint> KP;
+
+			Mat temp = data.templates[nTemp];
+			int xSize = temp.cols;
+			int ySize = temp.rows;
+
+			hBlob.detect(temp, KP);
+			std::sort(KP.begin(), KP.end(), [](cv::KeyPoint a, cv::KeyPoint b) { return a.response > b.response; });
+			int yCentre = round(KP[0].pt.y);
+			int xCentre = round(KP[0].pt.x);
+
+			// CIFI Extraction
+			for (int rTemp = 0; rTemp < nCircles; rTemp++)
+			{
+				vector<int> ind[2];
+				ind[0] = base->circles[0][rTemp];
+				ind[1] = base->circles[1][rTemp];
+				vector<int> tempArray;
+				int csize = circSizes[rTemp];
+
+				for (int i = 0; i < csize; i++)
+				{
+					vector<int> ind2[2];
+					ind2[0][i] = ind[0][i] + yCentre;
+					ind2[1][i] = ind[1][i] + xCentre;
+
+					int linIndex = sub2ind(temp.rows, ind2[0][i], ind2[1][i]);
+					tempArray[i] = temp.at<int>(linIndex);
+				}
+				double sum = std::accumulate(tempArray.begin(), tempArray.end(), 0.0);
+				double mean = sum / tempArray.size();
+				data.CIFIdata[nTemp][rTemp] = mean;
+			}
+
+			// RAFI Extraction
+			for (int rTemp = 0; rTemp < nRadials; rTemp++)
+			{
+				vector<int> ind[2];
+				ind[0] = base->radials[0][rTemp];
+				ind[1] = base->radials[1][rTemp];
+				vector<int> tempArray;
+				int rsize = radSizes[rTemp];
+
+				for (int i = 0; i < rsize; i++)
+				{
+					vector<int> ind2[2];
+					ind2[0][i] = ind[0][i] + yCentre;
+					ind2[1][i] = ind[1][i] + xCentre;
+
+					int linIndex = sub2ind(temp.rows, ind2[0][i], ind2[1][i]);
+					tempArray[i] = temp.at<int>(linIndex);
+				}
+				double sum = std::accumulate(tempArray.begin(), tempArray.end(), 0.0);
+				double mean = sum / tempArray.size();
+				RAFIDataStatic[nTemp][rTemp] = mean;
+			}
+		}
+
+		for (int alpha = 1; alpha < nRadials+1; alpha++)
+		{
+			for (int nTemp = 1; nTemp < nScales+1; nTemp++)
+			{
+				for (int rTemp = 1; rTemp < nRadials+1; rTemp++)
+				{
+					if ((rTemp + alpha - 1) < nRadials)
+					{
+						data.RAFIdata[nTemp - 1][rTemp - 1][alpha - 1] = RAFIDataStatic[nTemp - 1][(rTemp + alpha - 1) - 1];
+					}
+					else
+					{
+						data.RAFIdata[nTemp - 1][rTemp - 1][alpha - 1] = RAFIDataStatic[nTemp - 1][(rTemp + alpha - (1 + nRadials)) - 1];
+					}
+				}
+			}
+		}
+
+		return data;
+	}
+}
