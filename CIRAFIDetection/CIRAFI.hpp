@@ -56,7 +56,6 @@ namespace CIRAFI
 		void Cisssa(cv::Mat& sourceImage);
 		void Cissq(cv::Mat& templateImage);
 		void Cifi(cv::Mat& sourceImage);
-		void CifiAnalysis(cv::Mat& sourceImage);
 
 		double RadialSample(cv::Mat& image, int centerY, int centerX, double angle, double radius);
 		void Rassq(cv::Mat& templateImage);
@@ -66,6 +65,7 @@ namespace CIRAFI
 		cv::Mat DrawTefiResult(cv::Mat& sourceImage, double sampleRatio = 1);
 
 		void TemplateSample(cv::Mat& templateImage);
+		void ObjectAnalysis(cv::Mat& sourceImage, cv::Mat& templateImage);
 
 		std::vector<CorrData> _cis;
 		std::vector<CorrData> _ras;

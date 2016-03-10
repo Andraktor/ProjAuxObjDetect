@@ -73,10 +73,7 @@ int main()
 	}
 	imshow("Template Image", tImg);
 	CIRAFIData tempA;
-	//tempA.CountParameter(tImg);
 	tempA.TemplateSample(tImg);
-	/*tempA.Cissq(tImg);
-	tempA.Rassq(tImg);*/
 
 	while (1)
 	{
@@ -112,13 +109,7 @@ int main()
 			if (bBox.width < 80 || bBox.height < 80) continue;
 			Mat roi = imgThresh(bBox);
 			imshow("ROI", roi);
-			tempA.Cisssa(roi);
-			tempA.Cifi(roi);
-			if (!tempA._cis.empty())
-			{
-				tempA.Rafi(roi);
-				tempA.Tefi(roi, tImg);
-			}
+			tempA.ObjectAnalysis(roi, tImg);
 		}
 
 		// Evaluate results of CIRAFI analysis and display to window

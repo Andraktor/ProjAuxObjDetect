@@ -55,6 +55,7 @@ namespace CIRAFI
 
 	void CIRAFIData::Cisssa(Mat& sourceImage)
 	{
+		_ca.clear();
 		_ca.resize(_circleNum*sourceImage.rows*sourceImage.cols, -1.0);
 		int n = sourceImage.rows*sourceImage.cols;
 		int smallestRadius = ceil(scale(0)*_templateRadius);
@@ -185,12 +186,6 @@ namespace CIRAFI
 				}
 			}
 		}
-	}
-
-	void CIRAFIData::CifiAnalysis(Mat& sourceImage)
-	{
-		Cisssa(sourceImage);
-		Cifi(sourceImage);
 	}
 
 	double CIRAFIData::RadialSample(Mat& image, int centerY, int centerX, double angle, double radius)
@@ -457,6 +452,17 @@ namespace CIRAFI
 			line(tefiResult, Point(x1, y1), Point(x2, y2), Scalar(0, 0, 255), 2);
 		}
 		return tefiResult;
+	}
+
+	void CIRAFIData::ObjectAnalysis(Mat& sourceImage, Mat& templateImage)
+	{
+		Cisssa(sourceImage);
+		Cifi(sourceImage);
+		if (!_cis.empty())
+		{
+			Rafi(sourceImage);
+			Tefi(sourceImage, templateImage);
+		}
 	}
 
 	void CIRAFIData::TemplateSample(cv::Mat& templateImage)
