@@ -67,7 +67,7 @@ int main()
 			return -1;
 		}
 
-		resize(tImg, tImg, Size(120, 160));
+		resize(tImg, tImg, Size(180, 240));
 		cvtColor(tImg, tImg, CV_BGR2HSV);
 		inRange(tImg, Scalar(0, 0, 100), Scalar(255, 100, 255), tImg);
 	}
@@ -106,7 +106,8 @@ int main()
 		for (int i = 0; i < contours.size(); i++)
 		{
 			Rect bBox = boundingRect(contours[i]);
-			if (bBox.width < 80 || bBox.height < 80) continue;
+			if (bBox.width < 120 || bBox.height < 120) continue;
+			if (bBox.area() > (76800)) continue;
 			Mat roi = imgThresh(bBox);
 			imshow("ROI", roi);
 			tempA.ObjectAnalysis(roi, tImg);
@@ -126,6 +127,9 @@ int main()
 				double tot = cis*ras;
 				cout << "RAFI: " + to_string(ras) << endl << endl;
 				cout << "TOTAL: " + to_string(tot) << endl << endl;
+				//Mat tef = tempA.DrawTefiResult(frame);
+				//imshow("Tefi Result", tef);
+				//resizeWindow("Tefi Result", 640, 480);
 			}
 		}
 

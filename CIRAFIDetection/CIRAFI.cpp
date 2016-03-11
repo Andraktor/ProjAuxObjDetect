@@ -55,7 +55,6 @@ namespace CIRAFI
 
 	void CIRAFIData::Cisssa(Mat& sourceImage)
 	{
-		_ca.clear();
 		_ca.resize(_circleNum*sourceImage.rows*sourceImage.cols, -1.0);
 		int n = sourceImage.rows*sourceImage.cols;
 		int smallestRadius = ceil(scale(0)*_templateRadius);
