@@ -31,9 +31,8 @@ int maxH = 255; int minH = 0;
 int maxS = 50; int minS = 0;
 int maxV = 255; int minV = 180;
 
-int libLen = 1; // length must be 1 less than total number of images
-string libPath = "Template Library\\";
-vector<string> strID = { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
+vector<CIRAFIData> LibData;
+vector<char> strID = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
 int main()
 {
@@ -46,34 +45,18 @@ int main()
 		return -1;
 	}
 
-	double camWidth = camera.get(CAP_PROP_FRAME_WIDTH); // get width of images from camera
-	double camHeight = camera.get(CAP_PROP_FRAME_HEIGHT); // get height of images from camera
-
 	//Initialise Display Windows
 	namedWindow("Camera Input", CV_WINDOW_NORMAL);
 	namedWindow("Thresholded Image", CV_WINDOW_NORMAL);
 
-	Mat tImg;
-	//Initialise Template Library
-	for (int libIndex = 0; libIndex < libLen; libIndex++)
-	{
-		string pathname = libPath + "IMG_" + to_string(libIndex+1) + ".jpg";
-		//Mat tImg = imread(pathname);
-		tImg = imread("C:/Users/Infla/OneDrive/Documents/Visual Studio 2015/Projects/CIRAFIDetection/CIRAFIDetection/Template Library/Acrop.jpg");
-		if (!tImg.data)
-		{
-			cout << "Failed to load image " + to_string(libIndex + 1) + " correctly. Quitting program." << endl;
-			cin.get();
-			return -1;
-		}
+	Mat tImg = imread("C:/Users/Infla/OneDrive/Documents/Visual Studio 2015/Projects/CIRAFIDetection/CIRAFIDetection/Template Library/Acrop.jpg");
+	resize(tImg, tImg, Size(180, 240));
+	cvtColor(tImg, tImg, CV_BGR2HSV);
+	inRange(tImg, Scalar(0, 0, 100), Scalar(255, 100, 255), tImg);
 
-		resize(tImg, tImg, Size(180, 240));
-		cvtColor(tImg, tImg, CV_BGR2HSV);
-		inRange(tImg, Scalar(0, 0, 100), Scalar(255, 100, 255), tImg);
-	}
 	imshow("Template Image", tImg);
-	CIRAFIData tempA;
-	tempA.TemplateSample(tImg);
+	//CIRAFIData tempA(tImg, 'A');
+	LibData.push_back(CIRAFIData(tImg, 'A'));
 
 	while (1)
 	{
@@ -103,35 +86,43 @@ int main()
 		// Find seperate object bounding boxes in image
 		Mat contImg = imgThresh.clone();
 		cv::findContours(contImg, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
+
+		// Loop through each object
 		for (int i = 0; i < contours.size(); i++)
 		{
 			Rect bBox = boundingRect(contours[i]);
 			if (bBox.width < 120 || bBox.height < 120) continue;
 			if (bBox.area() > (76800)) continue;
-			Mat roi = imgThresh(bBox);
-			imshow("ROI", roi);
-			tempA.ObjectAnalysis(roi, tImg);
-		}
 
-		// Evaluate results of CIRAFI analysis and display to window
-		if (!tempA._cis.empty())
-		{
-			int ct = tempA._cis.size() - 1;
-			double cis = tempA._cis[ct].GetCoefficient();
-			cout << "CIFI: " + to_string(cis) << endl << endl;
-
-			if (!tempA._ras.empty())
+			// Loop through each template to obtain CIRAFI coefficients
+			for (int n = 0; n < LibData.size(); n++)
 			{
-				int rt = tempA._ras.size() - 1;
-				double ras = tempA._ras[rt].GetCoefficient();
-				double tot = cis*ras;
-				cout << "RAFI: " + to_string(ras) << endl << endl;
-				cout << "TOTAL: " + to_string(tot) << endl << endl;
-				//Mat tef = tempA.DrawTefiResult(frame);
-				//imshow("Tefi Result", tef);
-				//resizeWindow("Tefi Result", 640, 480);
+				Mat roi = imgThresh(bBox);
+				imshow("ROI", roi);
+				LibData[n].ObjectAnalysis(roi);
 			}
 		}
+		
+
+		// Evaluate results of CIRAFI analysis and display to window
+		//if (!tempA._cis.empty())
+		//{
+		//	int ct = tempA._cis.size() - 1;
+		//	double cis = tempA._cis[ct].GetCoefficient();
+		//	cout << "CIFI: " + to_string(cis) << endl << endl;
+
+		//	if (!tempA._ras.empty())
+		//	{
+		//		int rt = tempA._ras.size() - 1;
+		//		double ras = tempA._ras[rt].GetCoefficient();
+		//		double tot = cis*ras;
+		//		cout << "RAFI: " + to_string(ras) << endl << endl;
+		//		cout << "TOTAL: " + to_string(tot) << endl << endl;
+		//		//Mat tef = tempA.DrawTefiResult(frame);
+		//		//imshow("Tefi Result", tef);
+		//		//resizeWindow("Tefi Result", 640, 480);
+		//	}
+		//}
 
 		imshow("Camera Input", frame); // show original frame
 		resizeWindow("Camera Input", 640, 480);

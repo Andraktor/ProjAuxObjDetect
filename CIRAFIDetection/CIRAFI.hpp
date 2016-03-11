@@ -14,6 +14,27 @@ using namespace std;
 #define _CIRAFI_H_
 namespace CIRAFI
 {
+	class LetterData
+	{
+	public:
+		LetterData() : _letter('-'), _x(-1), _y(-1), _coef(-1) {}
+		void SetLetterData(char letter, int x, int y, double coef)
+		{
+			_letter = letter;
+			_x = x;
+			_y = y;
+			_coef = coef;
+		}
+		char GetLetter(void) { return _letter; }
+		Size GetPosition(void) { return Size(_x, _y); }
+		double GetCoef(void) { return _coef; }
+
+		char _letter;
+		int _x;
+		int _y;
+		double _coef;
+	};
+
 	class CorrData
 	{
 	public:
@@ -35,7 +56,14 @@ namespace CIRAFI
 	{
 	public:
 		CIRAFIData() :_scaleNum(5), _initialScale(0.5), _finalScale(1.0), _angleNum(36), _scaleThreshold(0.8), _angleThreshold(0.5), _nccThreshold(0.9)
-			, _isMatchNegative(false), _circleNum(16), _initialRadius(0), _finalRadius(-1), _tefiTolerance(1) {}
+			, _isMatchNegative(false), _circleNum(16), _initialRadius(0), _finalRadius(-1), _tefiTolerance(1), maxCis(-1,-1,-1,-1,-1), maxRas(-1, -1, -1, -1, -1), _letter('-') {}
+
+		CIRAFIData(cv::Mat& templateImage, char letter) : _scaleNum(5), _initialScale(0.5), _finalScale(1.0), _angleNum(36), _scaleThreshold(0.8), _angleThreshold(0.5), _nccThreshold(0.9)
+			, _isMatchNegative(false), _circleNum(16), _initialRadius(0), _finalRadius(-1), _tefiTolerance(1), maxCis(-1, -1, -1, -1, -1), maxRas(-1, -1, -1, -1, -1), _letter(letter)
+		{
+			TemplateSample(templateImage);
+		}
+
 		void CountParameter(cv::Mat& templateImage);
 		double scale(double s) { return _initialScale*pow(_passoesc, s); }
 		void SetScaleNum(int scaleNum) { _scaleNum = scaleNum; }
@@ -65,11 +93,16 @@ namespace CIRAFI
 		cv::Mat DrawTefiResult(cv::Mat& sourceImage, double sampleRatio = 1);
 
 		void TemplateSample(cv::Mat& templateImage);
-		void ObjectAnalysis(cv::Mat& sourceImage, cv::Mat& templateImage);
+		void ObjectAnalysis(cv::Mat& sourceImage);
+		void ResetCoefficients(void);
+		
+		char GetTempLetter(void) { return _letter; }
 
 		std::vector<CorrData> _cis;
 		std::vector<CorrData> _ras;
 		std::vector<CorrData> _tes;
+		CorrData maxCis;
+		CorrData maxRas;
 
 	private:
 		int _scaleNum;
@@ -92,6 +125,8 @@ namespace CIRAFI
 		std::vector<double> _ca;
 		std::vector<double> _cq;
 		std::vector<double> _rq;
+
+		char _letter;
 	};
 
 	inline double round(double val, int precision = 0)

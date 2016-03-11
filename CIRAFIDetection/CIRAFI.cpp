@@ -117,7 +117,6 @@ namespace CIRAFI
 			{
 				cqi[s][i] = _cq[sn + i];
 				meanCqi += _cq[sn + i];
-
 			}
 			meanCqi /= (double)resizedCircleNum;
 			for (int i = 0; i<resizedCircleNum; i++)
@@ -182,6 +181,10 @@ namespace CIRAFI
 				if (maxCoef>_scaleThreshold)
 				{
 					_cis.push_back(CorrData(y, x, fitScale, -1, maxCoef));
+					if (maxCoef > maxCis.GetCoefficient())
+					{
+						maxCis = CorrData(y, x, fitScale, -1, maxCoef);
+					}
 				}
 			}
 		}
@@ -300,6 +303,10 @@ namespace CIRAFI
 			if (maxCoef>_angleThreshold)
 			{
 				_ras.push_back(CorrData(y, x, candidate.GetScale(), fitAngle, maxCoef));
+				if (maxCoef > maxRas.GetCoefficient())
+				{
+					maxRas = CorrData(y, x, candidate.GetScale(), fitAngle, maxCoef);
+				}
 			}
 		}
 	}
@@ -453,14 +460,13 @@ namespace CIRAFI
 		return tefiResult;
 	}
 
-	void CIRAFIData::ObjectAnalysis(Mat& sourceImage, Mat& templateImage)
+	void CIRAFIData::ObjectAnalysis(Mat& sourceImage)
 	{
 		Cisssa(sourceImage);
 		Cifi(sourceImage);
 		if (!_cis.empty())
 		{
 			Rafi(sourceImage);
-			Tefi(sourceImage, templateImage);
 		}
 	}
 
@@ -469,5 +475,11 @@ namespace CIRAFI
 		CountParameter(templateImage);
 		Cissq(templateImage);
 		Rassq(templateImage);
+	}
+
+	void CIRAFIData::ResetCoefficients(void)
+	{
+		maxCis = CorrData(-1, -1, -1, -1, -1);
+		maxRas = CorrData(-1, -1, -1, -1, -1);
 	}
 }
