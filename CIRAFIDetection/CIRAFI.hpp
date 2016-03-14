@@ -155,8 +155,9 @@ namespace CIRAFI
 		double _angleDegree;
 		double _angleRadian;
 		double _templateRadius;
-		std::vector<double> _ca;
 		std::vector<double> _cq;
+		vector<vector<double>> _cqi;
+		vector<double> _cqi2;
 		std::vector<double> _rq;
 
 		char _letter;

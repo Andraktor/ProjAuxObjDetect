@@ -53,7 +53,7 @@ namespace CIRAFI
 		return *(image.data + y*image.step[0] + x*image.step[1]);
 	}
 
-	void CIRAFIData::Cisssa(Mat& sourceImage)
+	/*void CIRAFIData::Cisssa(Mat& sourceImage)
 	{
 		_ca.resize(_circleNum*sourceImage.rows*sourceImage.cols, -1.0);
 		int n = sourceImage.rows*sourceImage.cols;
@@ -77,7 +77,7 @@ namespace CIRAFI
 				}
 			}
 		}
-	}
+	}*/
 
 	void CIRAFIData::Cissq(Mat& templateImage)
 	{
@@ -99,12 +99,10 @@ namespace CIRAFI
 				_cq[sn + c] = CircularSample(resizedTemplate, templateRowCenter, templateColCenter, round(c*_circleDistance + _initialRadius));
 			}
 		}
-	}
 
-	void CIRAFIData::Cifi(Mat& sourceImage, std::vector<double> ca)
-	{
 		vector<vector<double> > cqi(_scaleNum);
 		vector<double> cqi2(_scaleNum, 0);
+
 		for (int s = 0; s<_scaleNum; s++)
 		{
 			int resizedCircleNum = _circleNum - 1;
@@ -125,7 +123,12 @@ namespace CIRAFI
 				cqi2[s] += cqi[s][i] * cqi[s][i];
 			}
 		}
+		_cqi = cqi;
+		_cqi2 = cqi2;
+	}
 
+	void CIRAFIData::Cifi(Mat& sourceImage, std::vector<double> ca)
+	{
 		_cis.clear();
 		int n = sourceImage.rows*sourceImage.cols;
 		int smallestRadius = ceil(scale(0)*_templateRadius);
@@ -142,9 +145,9 @@ namespace CIRAFI
 				int fitScale;
 				for (int s = 0; s<_scaleNum; s++)
 				{
-					vector<double>& X = cqi[s];
-					double X2 = cqi2[s];
-					Y.resize(cqi[s].size());
+					vector<double>& X = _cqi[s];
+					double X2 = _cqi2[s];
+					Y.resize(_cqi[s].size());
 					double meanY = 0;
 					double Y2 = 0;
 					for (int i = Y.size() - 1; i >= 0; i--)
