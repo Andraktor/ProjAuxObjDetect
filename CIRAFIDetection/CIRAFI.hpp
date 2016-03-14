@@ -38,7 +38,7 @@ namespace CIRAFI
 	class ObjectData
 	{
 	public:
-		ObjectData(int tempRad) : _ca(-1)
+		ObjectData(int tempRad) : _circleNum(16), _initialRadius(0), _scaleNum(5), _initialScale(0.5), _finalScale(1.0)
 		{
 			if (_scaleNum>1) _passoesc = exp(log(_finalScale / _initialScale) / _scaleNum); else _passoesc = 1.0;
 			SetTemplateRadius(tempRad);
@@ -55,13 +55,13 @@ namespace CIRAFI
 		T clip(const T val, const T lower, const T upper) { return std::max(lower, std::min(val, upper)); }
 		double scale(double s) { return _initialScale*pow(_passoesc, s); }
 
-		int _circleNum = 16;
-		int _initialRadius = 0;
-		int _finalRadius;
-		int _circleDistance;
-		int _scaleNum = 5;
-		int _initialScale = 0.5;
-		int _finalScale = 1.0;
+		int _circleNum;
+		double _initialRadius;
+		double _finalRadius;
+		double _circleDistance;
+		int _scaleNum;
+		double _initialScale;
+		double _finalScale;
 		double _passoesc;
 		int _templateRadius;
 		std::vector<double> _ca;
@@ -116,7 +116,7 @@ namespace CIRAFI
 		double CircularSample(cv::Mat& image, int y, int x, int radius);
 		void Cisssa(cv::Mat& sourceImage);
 		void Cissq(cv::Mat& templateImage);
-		void Cifi(cv::Mat& sourceImage);
+		void Cifi(cv::Mat& sourceImage, std::vector<double> ca);
 
 		double RadialSample(cv::Mat& image, int centerY, int centerX, double angle, double radius);
 		void Rassq(cv::Mat& templateImage);
@@ -126,7 +126,7 @@ namespace CIRAFI
 		cv::Mat DrawTefiResult(cv::Mat& sourceImage, double sampleRatio = 1);
 
 		void TemplateSample(cv::Mat& templateImage);
-		void ObjectAnalysis(cv::Mat& sourceImage);
+		void ObjectCompare(cv::Mat& sourceImage, std::vector<double> ca);
 		void ResetCoefficients(void);
 		
 		char GetTempLetter(void) { return _letter; }

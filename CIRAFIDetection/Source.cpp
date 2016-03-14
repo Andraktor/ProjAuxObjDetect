@@ -53,6 +53,8 @@ int main()
 
 	Mat tImg = imread("C:/Users/Infla/OneDrive/Documents/Visual Studio 2015/Projects/CIRAFIDetection/CIRAFIDetection/Template Library/Acrop.jpg");
 	resize(tImg, tImg, Size(180, 240));
+	int tempRad = 240 / 2; //this needs to be half of the largest dimension of the template
+
 	cvtColor(tImg, tImg, CV_BGR2HSV);
 	inRange(tImg, Scalar(0, 0, 100), Scalar(255, 100, 255), tImg);
 
@@ -93,15 +95,21 @@ int main()
 		for (int i = 0; i < contours.size(); i++)
 		{
 			Rect bBox = boundingRect(contours[i]);
-			if (bBox.width < 120 || bBox.height < 120) continue;
+			if (bBox.width < tempRad || bBox.height < tempRad) continue;
 			if (bBox.area() > (76800)) continue;
+			Mat roi = imgThresh(bBox);
+			imshow("ROI", roi);
+
+			ObjectData obj = ObjectData(tempRad);
+			obj.ObjectAnalysis(roi);
 
 			// Loop through each template to obtain CIRAFI coefficients
 			for (int n = 0; n < LibData.size(); n++)
 			{
-				Mat roi = imgThresh(bBox);
-				imshow("ROI", roi);
-				LibData[n].ObjectAnalysis(roi);
+				LibData[n].ObjectCompare(roi, obj.Get());
+				/*int ct = LibData[n]._cis.size() - 1;
+				double cis = LibData[n]._cis[ct].GetCoefficient();
+				cout << "CIFI: " + to_string(cis) << endl << endl;*/
 			}
 		}
 		

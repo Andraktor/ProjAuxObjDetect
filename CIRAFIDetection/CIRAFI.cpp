@@ -101,7 +101,7 @@ namespace CIRAFI
 		}
 	}
 
-	void CIRAFIData::Cifi(Mat& sourceImage)
+	void CIRAFIData::Cifi(Mat& sourceImage, std::vector<double> ca)
 	{
 		vector<vector<double> > cqi(_scaleNum);
 		vector<double> cqi2(_scaleNum, 0);
@@ -149,7 +149,7 @@ namespace CIRAFI
 					double Y2 = 0;
 					for (int i = Y.size() - 1; i >= 0; i--)
 					{
-						Y[i] = _ca[i*n + rn + x];
+						Y[i] = ca[i*n + rn + x];
 						if (Y[i]<0.0)
 						{
 							meanY = -1;
@@ -460,10 +460,9 @@ namespace CIRAFI
 		return tefiResult;
 	}
 
-	void CIRAFIData::ObjectAnalysis(Mat& sourceImage)
+	void CIRAFIData::ObjectCompare(Mat& sourceImage, std::vector<double> ca)
 	{
-		Cisssa(sourceImage);
-		Cifi(sourceImage);
+		Cifi(sourceImage, ca);
 		if (!_cis.empty())
 		{
 			Rafi(sourceImage);
