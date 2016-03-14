@@ -482,4 +482,65 @@ namespace CIRAFI
 		maxCis = CorrData(-1, -1, -1, -1, -1);
 		maxRas = CorrData(-1, -1, -1, -1, -1);
 	}
+
+	void ObjectData::ObjectAnalysis(Mat& sourceImage)
+	{
+		_ca.resize(_circleNum*sourceImage.rows*sourceImage.cols, -1.0);
+		int n = sourceImage.rows*sourceImage.cols;
+		int smallestRadius = ceil(scale(0)*_templateRadius);
+		int lastRow = sourceImage.rows - smallestRadius;
+		int lastCol = sourceImage.cols - smallestRadius;
+
+		for (int s = 0; s<_circleNum; s++)
+		{
+			int sn = s*n;
+			int radius = round(_circleDistance*s + _initialRadius);
+			for (int y = smallestRadius; y<lastRow; y++)
+			{
+				int rn = y*sourceImage.cols;
+				for (int x = smallestRadius; x<lastCol; x++)
+				{
+					if (y + radius<sourceImage.rows && y - radius >= 0 && x + radius<sourceImage.cols && x - radius >= 0)
+					{
+						_ca[sn + rn + x] = CircularSample(sourceImage, y, x, radius);
+					}
+				}
+			}
+		}
+	}
+
+	double ObjectData::CircularSample(Mat& image, int y, int x, int radius)
+	{
+		int y2 = 0; int x2 = radius; int sum = 0; int count = 0;
+		int r2 = radius*radius;
+		while (x2>0)
+		{
+			sum += *(image.data + image.step[0] * (y + y2) + image.step[1] * (x + x2));
+			sum += *(image.data + image.step[0] * (y - y2) + image.step[1] * (x - x2));
+			sum += *(image.data + image.step[0] * (y + x2) + image.step[1] * (x - y2));
+			sum += *(image.data + image.step[0] * (y - x2) + image.step[1] * (x + y2));
+
+			count = count + 4;
+
+			int mh = abs((y2 + 1)*(y2 + 1) + x2*x2 - r2);
+			int md = abs((y2 + 1)*(y2 + 1) + (x2 - 1)*(x2 - 1) - r2);
+			int mv = abs(y2*y2 + (x2 - 1)*(x2 - 1) - r2);
+			int m = min(min(mh, md), mv);
+			if (m == mh) y2++;
+			else if (m == md) { y2++; x2--; }
+			else x2--;
+		}
+		if (count>0)
+		{
+			return clip(((double)sum + (double)count / 2.0) / (double)count, 0.0, 255.0);
+		}
+		return *(image.data + y*image.step[0] + x*image.step[1]);
+	}
+
+	void ObjectData::SetTemplateRadius(int templateRadius)
+	{
+		_templateRadius = templateRadius;
+		_finalRadius = scale(_scaleNum - 1)*templateRadius;
+		if (_circleNum>1) _circleDistance = (_finalRadius - _initialRadius) / (_circleNum - 1); else _circleDistance = 0.0;
+	}
 }

@@ -35,6 +35,39 @@ namespace CIRAFI
 		double _coef;
 	};
 
+	class ObjectData
+	{
+	public:
+		ObjectData(int tempRad) : _ca(-1)
+		{
+			if (_scaleNum>1) _passoesc = exp(log(_finalScale / _initialScale) / _scaleNum); else _passoesc = 1.0;
+			SetTemplateRadius(tempRad);
+		}
+
+		void ObjectAnalysis(cv::Mat& sourceImage);
+		std::vector<double> Get(void) { return _ca; }
+
+	private:
+
+		double CircularSample(cv::Mat& image, int y, int x, int radius);
+		void SetTemplateRadius(int templateRadius);
+		template <class T>
+		T clip(const T val, const T lower, const T upper) { return std::max(lower, std::min(val, upper)); }
+		double scale(double s) { return _initialScale*pow(_passoesc, s); }
+
+		int _circleNum = 16;
+		int _initialRadius = 0;
+		int _finalRadius;
+		int _circleDistance;
+		int _scaleNum = 5;
+		int _initialScale = 0.5;
+		int _finalScale = 1.0;
+		double _passoesc;
+		int _templateRadius;
+		std::vector<double> _ca;
+
+	};
+
 	class CorrData
 	{
 	public:

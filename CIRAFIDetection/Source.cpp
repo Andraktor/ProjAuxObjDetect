@@ -1,5 +1,7 @@
 // CIRAFIDetection.cpp : Defines the entry point for the console application.
 //
+// Need to install opencv 3.0.0 libraries
+// Need to link to opencv_world300.lib, opencv_world300d.lib, opencv_ts300.lib, opencv_ts300d.lib
 
 #include "stdafx.h"
 #include <vector>
