@@ -466,10 +466,15 @@ namespace CIRAFI
 	void CIRAFIData::ObjectCompare(Mat& sourceImage, std::vector<double> ca)
 	{
 		Cifi(sourceImage, ca);
-		if (!_cis.empty())
-		{
-			Rafi(sourceImage);
-		}
+		if (!_cis.empty()) { Rafi(sourceImage); }
+	}
+
+	double CIRAFIData::CalculateCoef(void)
+	{
+		double cis = maxCis.GetCoefficient();
+		double ras = maxRas.GetCoefficient();
+		double tot = cis*ras;
+		return tot;
 	}
 
 	void CIRAFIData::TemplateSample(cv::Mat& templateImage)
@@ -481,8 +486,8 @@ namespace CIRAFI
 
 	void CIRAFIData::ResetCoefficients(void)
 	{
-		maxCis = CorrData(-1, -1, -1, -1, -1);
-		maxRas = CorrData(-1, -1, -1, -1, -1);
+		maxCis = CorrData(-1, -1, -1, -1, 0);
+		maxRas = CorrData(-1, -1, -1, -1, 0);
 	}
 
 	void ObjectData::ObjectAnalysis(Mat& sourceImage)

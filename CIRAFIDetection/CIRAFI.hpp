@@ -89,10 +89,10 @@ namespace CIRAFI
 	{
 	public:
 		CIRAFIData() :_scaleNum(5), _initialScale(0.5), _finalScale(1.0), _angleNum(36), _scaleThreshold(0.8), _angleThreshold(0.5), _nccThreshold(0.9)
-			, _isMatchNegative(false), _circleNum(16), _initialRadius(0), _finalRadius(-1), _tefiTolerance(1), maxCis(-1,-1,-1,-1,-1), maxRas(-1, -1, -1, -1, -1), _letter('-') {}
+			, _isMatchNegative(false), _circleNum(16), _initialRadius(0), _finalRadius(-1), _tefiTolerance(1), maxCis(-1,-1,-1,-1,0), maxRas(-1, -1, -1, -1, 0), _letter('-') {}
 
 		CIRAFIData(cv::Mat& templateImage, char letter) : _scaleNum(5), _initialScale(0.5), _finalScale(1.0), _angleNum(36), _scaleThreshold(0.8), _angleThreshold(0.5), _nccThreshold(0.9)
-			, _isMatchNegative(false), _circleNum(16), _initialRadius(0), _finalRadius(-1), _tefiTolerance(1), maxCis(-1, -1, -1, -1, -1), maxRas(-1, -1, -1, -1, -1), _letter(letter)
+			, _isMatchNegative(false), _circleNum(16), _initialRadius(0), _finalRadius(-1), _tefiTolerance(1), maxCis(-1, -1, -1, -1, 0), maxRas(-1, -1, -1, -1, 0), _letter(letter)
 		{
 			TemplateSample(templateImage);
 		}
@@ -127,6 +127,7 @@ namespace CIRAFI
 
 		void TemplateSample(cv::Mat& templateImage);
 		void ObjectCompare(cv::Mat& sourceImage, std::vector<double> ca);
+		double CalculateCoef(void);
 		void ResetCoefficients(void);
 		
 		char GetTempLetter(void) { return _letter; }

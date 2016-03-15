@@ -107,32 +107,16 @@ int main()
 			for (int n = 0; n < LibData.size(); n++)
 			{
 				LibData[n].ObjectCompare(roi, obj.Get());
-				/*int ct = LibData[n]._cis.size() - 1;
-				double cis = LibData[n]._cis[ct].GetCoefficient();
-				cout << "CIFI: " + to_string(cis) << endl << endl;*/
 			}
 		}
 		
-
-		// Evaluate results of CIRAFI analysis and display to window
-		//if (!tempA._cis.empty())
-		//{
-		//	int ct = tempA._cis.size() - 1;
-		//	double cis = tempA._cis[ct].GetCoefficient();
-		//	cout << "CIFI: " + to_string(cis) << endl << endl;
-
-		//	if (!tempA._ras.empty())
-		//	{
-		//		int rt = tempA._ras.size() - 1;
-		//		double ras = tempA._ras[rt].GetCoefficient();
-		//		double tot = cis*ras;
-		//		cout << "RAFI: " + to_string(ras) << endl << endl;
-		//		cout << "TOTAL: " + to_string(tot) << endl << endl;
-		//		//Mat tef = tempA.DrawTefiResult(frame);
-		//		//imshow("Tefi Result", tef);
-		//		//resizeWindow("Tefi Result", 640, 480);
-		//	}
-		//}
+		// Calculate total coefficient score for each template
+		for (int n = 0; n < LibData.size(); n++)
+		{
+			double score = LibData[n].CalculateCoef();
+			cout << "Letter " << LibData[n].GetTempLetter() << " Score: " << to_string(score) << endl << endl;
+			LibData[n].ResetCoefficients();
+		}
 
 		imshow("Camera Input", frame); // show original frame
 		resizeWindow("Camera Input", 640, 480);
