@@ -30,7 +30,7 @@ int maxS = 50; int minS = 0;
 int maxV = 255; int minV = 180;
 
 vector<CIRAFIData> LibData;
-int LibSize = 36;
+int LibSize = 1;
 vector<char> strID = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
 map<char, int> scoreHistory;
@@ -51,15 +51,23 @@ int main()
 	namedWindow("Thresholded Image", CV_WINDOW_NORMAL);
 
 	// Initialise Template Library
-	Mat tImg = imread("C:/Users/Infla/OneDrive/Documents/Visual Studio 2015/Projects/CIRAFIDetection/CIRAFIDetection/Template Library/Acrop.jpg");
-	resize(tImg, tImg, Size(180, 240));
-	int tempRad = 240 / 2; //this needs to be half of the largest dimension of the template
+	string pathname = "Template Library/";
+	int tempRad = 120; //this needs to be half of the largest dimension of the template
+	for (int i = 0; i < LibSize; i++)
+	{
+		string filename = pathname + "IMG_";
+		filename += strID[i];
+		filename += ".jpg";
+		Mat tImg = imread(filename);
+		resize(tImg, tImg, Size(tempRad*2, tempRad*2));
 
-	cvtColor(tImg, tImg, CV_BGR2HSV);
-	inRange(tImg, Scalar(0, 0, 100), Scalar(255, 100, 255), tImg);
+		cvtColor(tImg, tImg, CV_BGR2HSV);
+		inRange(tImg, Scalar(0, 0, 100), Scalar(255, 100, 255), tImg);
 
-	imshow("Template Image", tImg);
-	LibData.push_back(CIRAFIData(tImg, 'A'));
+		imshow("Template Image", tImg);
+		LibData.push_back(CIRAFIData(tImg, strID[i]));
+	}
+	//Mat tImg = imread("C:/Users/Infla/OneDrive/Documents/Visual Studio 2015/Projects/CIRAFIDetection/CIRAFIDetection/Template Library/Acrop.jpg");
 
 	while (1)
 	{
