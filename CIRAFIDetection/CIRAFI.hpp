@@ -12,6 +12,16 @@ using namespace std;
 
 #ifndef _CIRAFI_H_
 #define _CIRAFI_H_
+
+#define PI 3.14159265359
+
+#define initScale 0.5
+#define finScale 1.0
+#define numScale 5
+
+#define scaleThresh 0.8
+#define angThresh 0.5
+
 namespace CIRAFI
 {
 	struct LetterData
@@ -29,7 +39,7 @@ namespace CIRAFI
 	class ObjectData
 	{
 	public:
-		ObjectData(int tempRad) : _circleNum(16), _initialRadius(0), _scaleNum(5), _initialScale(0.5), _finalScale(1.0)
+		ObjectData(int tempRad) : _circleNum(16), _initialRadius(0), _scaleNum(numScale), _initialScale(initScale), _finalScale(finScale)
 		{
 			if (_scaleNum>1) _passoesc = exp(log(_finalScale / _initialScale) / _scaleNum); else _passoesc = 1.0;
 			SetTemplateRadius(tempRad);
@@ -79,10 +89,10 @@ namespace CIRAFI
 	class CIRAFIData
 	{
 	public:
-		CIRAFIData() :_scaleNum(5), _initialScale(0.5), _finalScale(1.0), _angleNum(36), _scaleThreshold(0.8), _angleThreshold(0.5), _nccThreshold(0.9)
+		CIRAFIData() :_scaleNum(numScale), _initialScale(initScale), _finalScale(finScale), _angleNum(36), _scaleThreshold(scaleThresh), _angleThreshold(angThresh), _nccThreshold(0.9)
 			, _isMatchNegative(false), _circleNum(16), _initialRadius(0), _finalRadius(-1), _tefiTolerance(1), maxCis(-1,-1,-1,-1,0), maxRas(-1, -1, -1, -1, 0), _letter('-') {}
 
-		CIRAFIData(cv::Mat& templateImage, char letter) : _scaleNum(5), _initialScale(0.5), _finalScale(1.0), _angleNum(36), _scaleThreshold(0.8), _angleThreshold(0.5), _nccThreshold(0.9)
+		CIRAFIData(cv::Mat& templateImage, char letter) : _scaleNum(numScale), _initialScale(initScale), _finalScale(finScale), _angleNum(36), _scaleThreshold(scaleThresh), _angleThreshold(angThresh), _nccThreshold(0.9)
 			, _isMatchNegative(false), _circleNum(16), _initialRadius(0), _finalRadius(-1), _tefiTolerance(1), maxCis(-1, -1, -1, -1, 0), maxRas(-1, -1, -1, -1, 0), _letter(letter)
 		{
 			TemplateSample(templateImage);
@@ -105,7 +115,6 @@ namespace CIRAFI
 		template <class T>
 		T clip(const T val, const T lower, const T upper) { return std::max(lower, std::min(val, upper)); }
 		double CircularSample(cv::Mat& image, int y, int x, int radius);
-		void Cisssa(cv::Mat& sourceImage);
 		void Cissq(cv::Mat& templateImage);
 		void Cifi(cv::Mat& sourceImage, std::vector<double> ca);
 

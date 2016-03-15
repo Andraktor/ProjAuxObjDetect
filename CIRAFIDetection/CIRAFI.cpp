@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "CIRAFI.hpp"
 
-#define PI 3.14159265359
-
 using namespace cv;
 using namespace std;
 
@@ -52,32 +50,6 @@ namespace CIRAFI
 		}
 		return *(image.data + y*image.step[0] + x*image.step[1]);
 	}
-
-	/*void CIRAFIData::Cisssa(Mat& sourceImage)
-	{
-		_ca.resize(_circleNum*sourceImage.rows*sourceImage.cols, -1.0);
-		int n = sourceImage.rows*sourceImage.cols;
-		int smallestRadius = ceil(scale(0)*_templateRadius);
-		int lastRow = sourceImage.rows - smallestRadius;
-		int lastCol = sourceImage.cols - smallestRadius;
-
-		for (int s = 0; s<_circleNum; s++)
-		{
-			int sn = s*n;
-			int radius = round(_circleDistance*s + _initialRadius);
-			for (int y = smallestRadius; y<lastRow; y++)
-			{
-				int rn = y*sourceImage.cols;
-				for (int x = smallestRadius; x<lastCol; x++)
-				{
-					if (y + radius<sourceImage.rows && y - radius >= 0 && x + radius<sourceImage.cols && x - radius >= 0)
-					{
-						_ca[sn + rn + x] = CircularSample(sourceImage, y, x, radius);
-					}
-				}
-			}
-		}
-	}*/
 
 	void CIRAFIData::Cissq(Mat& templateImage)
 	{

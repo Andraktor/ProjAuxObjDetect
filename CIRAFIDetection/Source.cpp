@@ -5,6 +5,7 @@
 
 #include "stdafx.h"
 #include <vector>
+#include <map>
 #include <iostream>
 #include <opencv2\core\core.hpp>
 #include <opencv2\highgui\highgui.hpp>
@@ -23,17 +24,13 @@ Mat imgThresh; // matrix to hold thresholded image
 vector<vector<Point>> contours;
 vector<Vec4i> hierarchy;
 
-// HSV values for red
-//int maxH = 179; int minH = 160;
-//int maxS = 255; int minS = 0;
-//int maxV = 255; int minV = 0;
-
 // HSV values for white
 int maxH = 255; int minH = 0;
 int maxS = 50; int minS = 0;
 int maxV = 255; int minV = 180;
 
 vector<CIRAFIData> LibData;
+int LibSize = 36;
 vector<char> strID = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
 int main()
@@ -51,6 +48,7 @@ int main()
 	namedWindow("Camera Input", CV_WINDOW_NORMAL);
 	namedWindow("Thresholded Image", CV_WINDOW_NORMAL);
 
+	// Initialise Template Library
 	Mat tImg = imread("C:/Users/Infla/OneDrive/Documents/Visual Studio 2015/Projects/CIRAFIDetection/CIRAFIDetection/Template Library/Acrop.jpg");
 	resize(tImg, tImg, Size(180, 240));
 	int tempRad = 240 / 2; //this needs to be half of the largest dimension of the template
@@ -59,7 +57,6 @@ int main()
 	inRange(tImg, Scalar(0, 0, 100), Scalar(255, 100, 255), tImg);
 
 	imshow("Template Image", tImg);
-	//CIRAFIData tempA(tImg, 'A');
 	LibData.push_back(CIRAFIData(tImg, 'A'));
 
 	while (1)
@@ -112,13 +109,28 @@ int main()
 		
 		// Calculate total coefficient score for each template
 		vector<LetterData> scores;
+		double scoreThresh = 0.5;
 		for (int n = 0; n < LibData.size(); n++)
 		{
 			double score = LibData[n].CalculateCoef();
-			scores.push_back(LetterData(LibData[n].GetTempLetter(), score));
-
-			cout << "Letter " << LibData[n].GetTempLetter() << " Score: " << to_string(score) << endl << endl;
+			if (score >= scoreThresh)
+			{
+				scores.push_back(LetterData(LibData[n].GetTempLetter(), score));
+			}
 			LibData[n].ResetCoefficients();
+		}
+
+		// Sort coefficient scores
+		sort(scores.begin(), scores.end(),
+			[](LetterData const &a, LetterData const &b) {
+			return a.coef < b.coef; });
+
+		// Display letter with highest confidence coefficient
+		if (!scores.empty()) {
+			cout << "Most likely letter: " << scores[0].letter << " Score: " << scores[0].coef << endl << endl;
+		}
+		else {
+			cout << "No likely matches found." << endl << endl;
 		}
 
 		imshow("Camera Input", frame); // show original frame
