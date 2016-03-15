@@ -55,7 +55,7 @@ int main()
 	int tempRad = 120; //this needs to be half of the largest dimension of the template
 	for (int i = 0; i < LibSize; i++)
 	{
-		string filename = pathname + "IMG_";
+		string filename = pathname + "cropped_";
 		filename += strID[i];
 		filename += ".jpg";
 		Mat tImg = imread(filename);
