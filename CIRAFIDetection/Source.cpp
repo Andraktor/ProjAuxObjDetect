@@ -33,6 +33,8 @@ vector<CIRAFIData> LibData;
 int LibSize = 36;
 vector<char> strID = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
+map<char, int> scoreHistory;
+
 int main()
 {
 
@@ -128,6 +130,14 @@ int main()
 		// Display letter with highest confidence coefficient
 		if (!scores.empty()) {
 			cout << "Most likely letter: " << scores[0].letter << " Score: " << scores[0].coef << endl << endl;
+
+			// Add to score history counter
+			if (scoreHistory.count(scores[0].letter) > 0) {
+				scoreHistory.at(scores[0].letter) += 1;
+			}
+			else {
+				scoreHistory.emplace(scores[0].letter, 1);
+			}
 		}
 		else {
 			cout << "No likely matches found." << endl << endl;
