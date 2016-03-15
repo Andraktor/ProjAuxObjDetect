@@ -111,9 +111,12 @@ int main()
 		}
 		
 		// Calculate total coefficient score for each template
+		vector<LetterData> scores;
 		for (int n = 0; n < LibData.size(); n++)
 		{
 			double score = LibData[n].CalculateCoef();
+			scores.push_back(LetterData(LibData[n].GetTempLetter(), score));
+
 			cout << "Letter " << LibData[n].GetTempLetter() << " Score: " << to_string(score) << endl << endl;
 			LibData[n].ResetCoefficients();
 		}

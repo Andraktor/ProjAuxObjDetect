@@ -14,25 +14,16 @@ using namespace std;
 #define _CIRAFI_H_
 namespace CIRAFI
 {
-	class LetterData
+	struct LetterData
 	{
-	public:
-		LetterData() : _letter('-'), _x(-1), _y(-1), _coef(-1) {}
-		void SetLetterData(char letter, int x, int y, double coef)
-		{
-			_letter = letter;
-			_x = x;
-			_y = y;
-			_coef = coef;
+		LetterData() : coef(-1), letter('-') {};
+		LetterData(char let, double scr)
+		{ 
+			letter = let;
+			coef = scr;
 		}
-		char GetLetter(void) { return _letter; }
-		Size GetPosition(void) { return Size(_x, _y); }
-		double GetCoef(void) { return _coef; }
-
-		char _letter;
-		int _x;
-		int _y;
-		double _coef;
+		char letter;
+		double coef;
 	};
 
 	class ObjectData
