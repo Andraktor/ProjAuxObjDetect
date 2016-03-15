@@ -67,7 +67,6 @@ int main()
 		imshow("Template Image", tImg);
 		LibData.push_back(CIRAFIData(tImg, strID[i]));
 	}
-	//Mat tImg = imread("C:/Users/Infla/OneDrive/Documents/Visual Studio 2015/Projects/CIRAFIDetection/CIRAFIDetection/Template Library/Acrop.jpg");
 
 	while (1)
 	{
