@@ -30,7 +30,7 @@ int maxS = 50; int minS = 0;
 int maxV = 255; int minV = 180;
 
 vector<CIRAFIData> LibData;
-int LibSize = 1;
+int LibSize = 36;
 vector<char> strID = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
 map<char, int> scoreHistory;
@@ -52,7 +52,7 @@ int main()
 
 	// Initialise Template Library
 	string pathname = "Template Library/";
-	int tempRad = 100; //this needs to be half of the largest dimension of the template
+	int tempRad = 80; //this needs to be half of the largest dimension of the template
 	for (int i = 0; i < LibSize; i++)
 	{
 		string filename = pathname + "cropped_";
@@ -101,6 +101,7 @@ int main()
 		for (int i = 0; i < contours.size(); i++)
 		{
 			Rect bBox = boundingRect(contours[i]);
+			/// bounding box is wrong shape - get centroid of bounding box and expand to square size?
 			if (bBox.width < tempRad || bBox.height < tempRad) continue;
 			if (bBox.area() > (76800)) continue;
 			Mat roi = imgThresh(bBox);
@@ -118,7 +119,7 @@ int main()
 		
 		// Calculate total coefficient score for each template
 		vector<LetterData> scores;
-		double scoreThresh = 0.5;
+		double scoreThresh = 0.4;
 		for (int n = 0; n < LibData.size(); n++)
 		{
 			double score = LibData[n].CalculateCoef();
@@ -132,7 +133,7 @@ int main()
 		// Sort coefficient scores
 		sort(scores.begin(), scores.end(),
 			[](LetterData const &a, LetterData const &b) {
-			return a.coef < b.coef; });
+			return a.coef > b.coef; });
 
 		// Display letter with highest confidence coefficient
 		if (!scores.empty()) {
