@@ -134,7 +134,7 @@ namespace CIRAFI
 					}
 					if (meanY<0) continue;
 					meanY /= (double)Y.size();
-					for (int i = 0; i<Y.size(); i++)
+					for (int i = 0; i < Y.size(); i++)
 					{
 						Y[i] -= meanY;
 						Y2 += Y[i] * Y[i];

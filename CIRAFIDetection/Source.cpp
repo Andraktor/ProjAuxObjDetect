@@ -101,9 +101,21 @@ int main()
 		for (int i = 0; i < contours.size(); i++)
 		{
 			Rect bBox = boundingRect(contours[i]);
-			/// bounding box is wrong shape - get centroid of bounding box and expand to square size?
+			if (bBox.area() >(76800)) continue;
 			if (bBox.width < tempRad || bBox.height < tempRad) continue;
-			if (bBox.area() > (76800)) continue;
+			/// bounding box is wrong shape - get centroid of bounding box and expand to square size?
+			/*int x = bBox.x + (bBox.width / 2);
+			int y = bBox.y + (bBox.height / 2);
+			if (bBox.width > bBox.height)
+			{
+				bBox.y = y - (bBox.width / 2);
+				bBox.height = bBox.width;
+			}
+			else if (bBox.width < bBox.height) {
+				bBox.x = x - (bBox.height / 2);
+				bBox.width = bBox.height;
+			}*/
+
 			Mat roi = imgThresh(bBox);
 			imshow("ROI", roi);
 
