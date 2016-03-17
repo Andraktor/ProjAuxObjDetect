@@ -404,6 +404,10 @@ namespace CIRAFI
 			if (maxCoef>_nccThreshold)
 			{
 				_tes.push_back(CorrData(y, x, fitScale, fitAngle, maxCoef));
+				if (maxCoef > maxTes.GetCoefficient())
+				{
+					maxTes = CorrData(y, x, fitScale, fitAngle, maxCoef);
+				}
 			}
 		}
 	}
@@ -438,13 +442,17 @@ namespace CIRAFI
 	void CIRAFIData::ObjectCompare(Mat& sourceImage, std::vector<double> ca)
 	{
 		Cifi(sourceImage, ca);
-		if (!_cis.empty()) { Rafi(sourceImage); }
+		if (!_cis.empty())
+		{
+			Rafi(sourceImage);
+		}
 	}
 
 	double CIRAFIData::CalculateCoef(void)
 	{
 		double cis = maxCis.GetCoefficient();
 		double ras = maxRas.GetCoefficient();
+		double tes = maxTes.GetCoefficient();
 		double tot = cis*ras;
 		return tot;
 	}
@@ -460,6 +468,7 @@ namespace CIRAFI
 	{
 		maxCis = CorrData(-1, -1, -1, -1, 0);
 		maxRas = CorrData(-1, -1, -1, -1, 0);
+		maxTes = CorrData(-1, -1, -1, -1, 0);
 	}
 
 	void ObjectData::ObjectAnalysis(Mat& sourceImage)

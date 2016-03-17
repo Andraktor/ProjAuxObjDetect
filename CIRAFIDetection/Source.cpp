@@ -26,8 +26,8 @@ vector<Vec4i> hierarchy;
 
 // HSV values for white
 int maxH = 255; int minH = 0;
-int maxS = 50; int minS = 0;
-int maxV = 255; int minV = 180;
+int maxS = 100; int minS = 0;
+int maxV = 255; int minV = 150;
 
 vector<CIRAFIData> LibData;
 int LibSize = 36;
@@ -78,7 +78,7 @@ int main()
 		}
 
 		// Resize frame to 640x480
-		resize(frame, frame, Size(640, 480));
+		resize(frame, frame, Size(640, 640));
 		
 		// Colourspace Conversions
 		cvtColor(frame, imgHSV, CV_BGR2HSV); // convert from RGB to HSV colour space
@@ -119,7 +119,7 @@ int main()
 		
 		// Calculate total coefficient score for each template
 		vector<LetterData> scores;
-		double scoreThresh = 0.4;
+		double scoreThresh = 0.7;
 		for (int n = 0; n < LibData.size(); n++)
 		{
 			double score = LibData[n].CalculateCoef();

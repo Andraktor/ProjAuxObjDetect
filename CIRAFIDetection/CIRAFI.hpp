@@ -90,10 +90,10 @@ namespace CIRAFI
 	{
 	public:
 		CIRAFIData() :_scaleNum(numScale), _initialScale(initScale), _finalScale(finScale), _angleNum(36), _scaleThreshold(scaleThresh), _angleThreshold(angThresh), _nccThreshold(0.9)
-			, _isMatchNegative(false), _circleNum(16), _initialRadius(0), _finalRadius(-1), _tefiTolerance(1), maxCis(-1,-1,-1,-1,0), maxRas(-1, -1, -1, -1, 0), _letter('-') {}
+			, _isMatchNegative(false), _circleNum(16), _initialRadius(0), _finalRadius(-1), _tefiTolerance(1), maxCis(-1,-1,-1,-1,0), maxRas(-1, -1, -1, -1, 0), maxTes(-1, -1, -1, -1, 0), _letter('-') {}
 
 		CIRAFIData(cv::Mat& templateImage, char letter) : _scaleNum(numScale), _initialScale(initScale), _finalScale(finScale), _angleNum(36), _scaleThreshold(scaleThresh), _angleThreshold(angThresh), _nccThreshold(0.9)
-			, _isMatchNegative(false), _circleNum(16), _initialRadius(0), _finalRadius(-1), _tefiTolerance(1), maxCis(-1, -1, -1, -1, 0), maxRas(-1, -1, -1, -1, 0), _letter(letter)
+			, _isMatchNegative(false), _circleNum(16), _initialRadius(0), _finalRadius(-1), _tefiTolerance(1), maxCis(-1, -1, -1, -1, 0), maxRas(-1, -1, -1, -1, 0), maxTes(-1, -1, -1, -1, 0), _letter(letter)
 		{
 			TemplateSample(templateImage);
 		}
@@ -137,6 +137,7 @@ namespace CIRAFI
 		std::vector<CorrData> _tes;
 		CorrData maxCis;
 		CorrData maxRas;
+		CorrData maxTes;
 
 	private:
 		int _scaleNum;
