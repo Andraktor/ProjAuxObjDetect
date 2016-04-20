@@ -16,11 +16,11 @@ using namespace std;
 #define PI 3.14159265359
 
 #define initScale 0.5
-#define finScale 1.0
-#define numScale 5
+#define finScale 2.5
+#define numScale 9
 
 #define scaleThresh 0.8
-#define angThresh 0.5
+#define angThresh 0.7
 
 namespace CIRAFI
 {

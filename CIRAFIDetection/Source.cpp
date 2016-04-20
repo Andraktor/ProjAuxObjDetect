@@ -20,14 +20,21 @@ using namespace CIRAFI;
 Mat frame; // matrix to hold frame under analysis
 Mat imgHSV; // matrix to hold frame converted to HSV colour space
 Mat imgThresh; // matrix to hold thresholded image
+Mat HSVmask;
+Mat testmask;
 
 vector<vector<Point>> contours;
 vector<Vec4i> hierarchy;
 
 // HSV values for white
-int maxH = 255; int minH = 0;
+int maxH = 180; int minH = 0;
 int maxS = 100; int minS = 0;
 int maxV = 255; int minV = 150;
+
+// Inverted HSV values for red
+int H_MIN = 10; int H_MAX = 170;
+int S_MIN = 0; int S_MAX = 255;
+int V_MIN = 0; int V_MAX = 255;
 
 vector<CIRAFIData> LibData;
 int LibSize = 36;
@@ -52,7 +59,7 @@ int main()
 
 	// Initialise Template Library
 	string pathname = "Template Library/";
-	int tempRad = 80; //this needs to be half of the largest dimension of the template
+	int tempRad = 50; //this needs to be half of the largest dimension of the template
 	for (int i = 0; i < LibSize; i++)
 	{
 		string filename = pathname + "cropped_";
@@ -60,12 +67,14 @@ int main()
 		filename += ".jpg";
 		Mat tImg = imread(filename);
 		resize(tImg, tImg, Size(tempRad*2, tempRad*2));
-
 		cvtColor(tImg, tImg, CV_BGR2HSV);
-		inRange(tImg, Scalar(0, 0, 100), Scalar(255, 100, 255), tImg);
-
-		imshow("Template Image", tImg);
-		LibData.push_back(CIRAFIData(tImg, strID[i]));
+		inRange(tImg, Scalar(0, 0, 0), Scalar(255, 100, 255), tImg);
+		Mat contImg = tImg.clone();
+		cv::findContours(contImg, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
+		Mat roi = tImg(boundingRect(contours[contours.size()-1]));
+		LibData.push_back(CIRAFIData(roi, strID[i]));
+		/*imshow(to_string(strID[i]), roi);
+		waitKey(2000);*/
 	}
 
 	while (1)
@@ -78,11 +87,22 @@ int main()
 		}
 
 		// Resize frame to 640x480
-		resize(frame, frame, Size(640, 640));
+		resize(frame, frame, Size(640, 480));
 		
-		// Colourspace Conversions
+		// Image Pre-Processing
 		cvtColor(frame, imgHSV, CV_BGR2HSV); // convert from RGB to HSV colour space
-		inRange(imgHSV, Scalar(minH, minS, minV), Scalar(maxH, maxS, maxV), imgThresh); // threshold image based on set parameters
+		inRange(imgHSV, Scalar(H_MIN, S_MIN, V_MIN), Scalar(H_MAX, S_MAX, V_MAX), HSVmask);
+		bitwise_not(HSVmask, HSVmask);
+		erode(HSVmask, HSVmask, getStructuringElement(MORPH_ELLIPSE, Size(5, 5))); // apply erosion to image
+		erode(HSVmask, HSVmask, getStructuringElement(MORPH_ELLIPSE, Size(5, 5))); // apply erosion to image
+		dilate(HSVmask, HSVmask, getStructuringElement(MORPH_ELLIPSE, Size(5, 5))); // apply dilation to image
+		floodFill(HSVmask, Point(0, 0), 256);
+		bitwise_not(HSVmask, HSVmask);
+		frame.copyTo(testmask, HSVmask);
+		cvtColor(testmask, testmask, CV_BGR2HSV);
+		inRange(testmask, Scalar(minH, minS, minV), Scalar(maxH, maxS, maxV), imgThresh); // threshold image based on set parameters
+		HSVmask = Mat::zeros(1, 1, CV_64F);
+		testmask = Mat::zeros(1, 1, CV_64F);
 
 		// Morphological Operations
 		// Opening
@@ -100,6 +120,7 @@ int main()
 		// Loop through each object
 		for (int i = 0; i < contours.size(); i++)
 		{
+			Mat roi = Mat::zeros(640, 480, CV_64F);
 			Rect bBox = boundingRect(contours[i]);
 			if (bBox.area() >(76800)) continue;
 			if (bBox.width < tempRad || bBox.height < tempRad) continue;
@@ -116,7 +137,8 @@ int main()
 				bBox.width = bBox.height;
 			}*/
 
-			Mat roi = imgThresh(bBox);
+			roi = imgThresh(bBox);
+			//resize(roi, roi, Size(tempRad * 2, tempRad * 2));
 			imshow("ROI", roi);
 
 			ObjectData obj = ObjectData(tempRad);
@@ -127,6 +149,7 @@ int main()
 			{
 				LibData[n].ObjectCompare(roi, obj.Get());
 			}
+			
 		}
 		
 		// Calculate total coefficient score for each template
@@ -149,7 +172,8 @@ int main()
 
 		// Display letter with highest confidence coefficient
 		if (!scores.empty()) {
-			cout << "Most likely letter: " << scores[0].letter << " Score: " << scores[0].coef << endl << endl;
+			//cout << "Most likely letter: " << scores[0].letter << " Score: " << scores[0].coef << endl << endl;
+			cout << scores[0].letter << " " << scores[1].letter << " " << scores[2].letter << endl << endl;
 
 			// Add to score history counter
 			if (scoreHistory.count(scores[0].letter) > 0) {
